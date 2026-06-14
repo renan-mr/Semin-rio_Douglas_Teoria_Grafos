@@ -24,22 +24,32 @@ f(n) = g(n) + h(n)
 
 ## O que a demo faz
 
-1. Modela um pequeno bairro de João Pessoa como grafo (cruzamentos = nós), com coordenadas aproximadas para calcular a heurística do A*.
+1. Modela **22 bairros de João Pessoa** como grafo (cruzamentos = nós), com coordenadas geográficas aproximadas para calcular a heurística do A*.
 2. Implementa Dijkstra e A* do zero usando uma fila de prioridade (`heapq`).
 3. Compara as duas rotas e o número de nós explorados por cada algoritmo.
 4. Simula um acidente de trânsito (peso de aresta aumenta) e mostra o recálculo de rota em tempo real — a feature central do Waze.
 
 ## Grafo Modelado
 
+22 bairros de João Pessoa, organizados de oeste a leste:
+
 ```
-Parque da Cidade ──3── Aeroclube ──4── Manaira
-       │                   │               │
-       6               6   └────5────  Bessa
-       │                               │
-    Cabo Branco ──4── Tambau ──7───────┘
+[OESTE]                    [CENTRO]                        [LESTE]
+
+Mandacaru── Cristo ── Bairro dos Estados
+    │           │              │
+Roger ── Varadouro ── Tambia ── Torre ── Expedicionarios ── Miramar ── Aeroclube ── Manaira ── Portal do Sol
+    │           │         │                    │                │                       │
+Funcionarios ── Centro ── Jaguaribe       Bancarios         Bancarios              Tambau ── Altiplano
+    │           │
+Agua Fria ── Valentina
+    │
+Mangabeira ── Cabo Branco
 ```
 
-Nós: Parque da Cidade, Aeroclube, Cabo Branco, Manaira, Tambau, Bessa
+**Origem:** Roger (extremo oeste) → **Destino:** Portal do Sol (extremo leste)
+
+A grande distância entre origem e destino, combinada com os bairros perpendiculares ao trajeto ótimo (norte/sul), é o que evidencia a superioridade do A*: enquanto Dijkstra explora praticamente todo o grafo, o A* descarta cedo os nós fora da direção do destino.
 
 ## Como Executar
 
@@ -50,27 +60,26 @@ python demo_rotas.py
 Exemplo de saída:
 
 ```
-=== ANTES DO TRANSITO (rota normal) ===
-Origem : Parque da Cidade
-Destino: Cabo Branco
+============================================================
+  ROTA NORMAL (sem trafego)
+============================================================
+  Origem : Roger
+  Destino: Portal do Sol
+  Total de nos no grafo: 22
 
-[Dijkstra]
-  Caminho        : Parque da Cidade -> Aeroclube -> Manaira -> Tambau -> Cabo Branco
-  Tempo          : 13 min
-  Nos explorados : 5 / 6
+  [Dijkstra]
+    Caminho        : Roger -> Varadouro -> Tambia -> Expedicionarios -> Miramar -> Bancarios -> Aeroclube -> Manaira -> Portal do Sol
+    Tempo          : 33 min
+    Nos explorados : 18 / 22
 
-[A*]
-  Caminho        : Parque da Cidade -> Aeroclube -> Manaira -> Tambau -> Cabo Branco
-  Tempo          : 13 min
-  Nos explorados : 4 / 6
+  [A*      ]
+    Caminho        : Roger -> Varadouro -> Tambia -> Expedicionarios -> Miramar -> Bancarios -> Aeroclube -> Manaira -> Portal do Sol
+    Tempo          : 33 min
+    Nos explorados : 10 / 22
 
-  -> Mesmo caminho otimo? SIM (tempo 13 min em ambos)
-  -> A* explorou 4 nos contra 5 do Dijkstra (menos trabalho).
-
-... 5 minutos depois: acidente bloqueia a Av. Beira Rio ...
-
-=== DEPOIS DO TRANSITO (rota recalculada) ===
-...
+  >> Mesmo caminho otimo? SIM (custo: 33 min)
+  >> A* explorou 10 nos, Dijkstra explorou 18 nos.
+  >> A* economizou 8 exploracoes (44% menos trabalho).
 ```
 
 ## Requisitos
